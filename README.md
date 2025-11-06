@@ -39,7 +39,95 @@ cd PublishWell
 dotnet restore
 ```
 
-4. **Run the application:** (Instructions will be added once development is further along)
+4. **Run the application:**
+
+```bash
+dotnet run
+```
+
+The application will start on `https://localhost:7094` (HTTPS) or `http://localhost:5254` (HTTP). You can access the Swagger UI at `/swagger`.
+
+## Deployment to Railway
+
+This application is configured for deployment to Railway. Follow these steps:
+
+### Prerequisites
+
+- A [Railway](https://railway.app/) account
+- GitHub repository connected to Railway
+
+### Deploy Steps
+
+1. **Push your code to GitHub:**
+
+```bash
+git add .
+git commit -m "Add Railway configuration"
+git push origin master
+```
+
+2. **Create a new project on Railway:**
+   - Go to [Railway](https://railway.app/)
+   - Click "New Project"
+   - Select "Deploy from GitHub repo"
+   - Choose your repository
+
+3. **Railway will automatically:**
+   - Detect the Dockerfile
+   - Build your application
+   - Deploy it to a public URL
+
+4. **Access your API:**
+   - Railway will provide a public URL (e.g., `https://your-app.railway.app`)
+   - Access Swagger at `https://your-app.railway.app/swagger`
+
+### Environment Variables
+
+Currently, the application uses default configuration. When you need to add environment variables (for databases, API keys, etc.), add them in Railway:
+
+1. Go to your project in Railway
+2. Click on "Variables"
+3. Add your environment variables
+
+**Common environment variables you might need:**
+
+- `ASPNETCORE_ENVIRONMENT`: Set to `Production` for production deployments
+- `ConnectionStrings__DefaultConnection`: Database connection string (when you add a database)
+- Any API keys or secrets your application needs
+
+### Adding a Database
+
+When you're ready to add a database (PostgreSQL, MySQL, etc.):
+
+1. **In Railway:**
+   - Click "New" in your project
+   - Select "Database" (e.g., PostgreSQL)
+   - Railway will provision the database and provide connection details
+
+2. **Update your application:**
+   - Install the appropriate NuGet package (e.g., `Npgsql.EntityFrameworkCore.PostgreSQL`)
+   - Configure your DbContext in `Program.cs`
+   - Add the connection string to Railway's environment variables
+
+3. **Example for PostgreSQL:**
+
+```bash
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+```
+
+Then in `Program.cs`:
+
+```csharp
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+```
+
+And set the `ConnectionStrings__DefaultConnection` variable in Railway to the database URL provided by Railway.
+
+### Monitoring
+
+- View logs in the Railway dashboard under "Deployments"
+- Set up health checks and monitoring as needed
 
 **Developing**
 
